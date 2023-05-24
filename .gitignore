@@ -166,3 +166,4 @@ data/*
 02-mlflow/preprocessor/*
 02-mlflow/mlflow.db
 models/*
+*.pkl
