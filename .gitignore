@@ -161,10 +161,4 @@ cython_debug/
 
 # Data
 data/*
-mlruns
-*/models/*
-*/preprocessor/*
-*/mlflow.db
-*/models/*
-*.pkl
-*.yaml
+.pkl
