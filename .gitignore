@@ -161,9 +161,10 @@ cython_debug/
 
 # Data
 data/*
-02-mlflow/mlruns/*
-02-mlflow/models/*
-02-mlflow/preprocessor/*
-02-mlflow/mlflow.db
-models/*
+mlruns
+*/models/*
+*/preprocessor/*
+*/mlflow.db
+*/models/*
 *.pkl
+*.yaml
