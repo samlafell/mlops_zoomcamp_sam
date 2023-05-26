@@ -1,0 +1,15 @@
+artifact_uri: file:///home/ubuntu/mlops_zoomcamp_sam/02-mlflow/homework/mlruns/0/aa465c0dd7c84d8eabaecc2340524de2/artifacts
+end_time: 1685104669515
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: aa465c0dd7c84d8eabaecc2340524de2
+run_name: popular-horse-826
+run_uuid: aa465c0dd7c84d8eabaecc2340524de2
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1685104656029
+status: 3
+tags: []
+user_id: ubuntu

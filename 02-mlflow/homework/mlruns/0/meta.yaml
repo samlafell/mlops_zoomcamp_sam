@@ -1,0 +1,6 @@
+artifact_location: file:///home/ubuntu/mlops_zoomcamp_sam/02-mlflow/homework/mlruns/0
+creation_time: 1685104655872
+experiment_id: '0'
+last_update_time: 1685104655872
+lifecycle_stage: active
+name: Default
