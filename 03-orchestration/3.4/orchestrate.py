@@ -14,7 +14,6 @@ from prefect import flow, task
 @task(retries=3, retry_delay_seconds=2)
 def read_data(filename: str) -> pd.DataFrame:
     """Read data into DataFrame"""
-    print(filename)
     df = pd.read_parquet(filename)
 
     df.lpep_dropoff_datetime = pd.to_datetime(df.lpep_dropoff_datetime)
@@ -124,7 +123,9 @@ def main_flow(
     # Load
     script_path = pathlib.Path(__file__).parent.absolute()
     train_path = (script_path / train_path).resolve()
+    print(train_path)
     val_path = (script_path / val_path).resolve()
+    print(val_path)
     df_train = read_data(train_path)
     df_val = read_data(val_path)
 
