@@ -122,8 +122,9 @@ def main_flow(
     mlflow.set_experiment("nyc-taxi-experiment")
 
     # Load
-    train_path = pathlib.Path(train_path).resolve()
-    val_path = pathlib.Path(val_path).resolve()
+    script_path = Path(__file__).parent.absolute()
+    train_path = (script_path / train_path).resolve()
+    val_path = (script_path / val_path).resolve()
     df_train = read_data(train_path)
     df_val = read_data(val_path)
 
