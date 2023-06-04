@@ -111,8 +111,8 @@ def train_best_model(
 
 @flow
 def main_flow(
-    train_path: str = "../../data/green_tripdata_2023-01.parquet",
-    val_path: str = "../../data/green_tripdata_2023-02.parquet",
+    train_path: str = "/Users/samlafell/Desktop/mlops_zoomcamp_sam/data/green_tripdata_2023-01.parquet",
+    val_path: str = "/Users/samlafell/Desktop/mlops_zoomcamp_sam/data/green_tripdata_2023-02.parquet",
 ) -> None:
     """The main training pipeline"""
 
@@ -121,11 +121,6 @@ def main_flow(
     mlflow.set_experiment("nyc-taxi-experiment")
 
     # Load
-    script_path = pathlib.Path(__file__).parent.absolute()
-    train_path = (script_path / train_path).resolve()
-    print(train_path)
-    val_path = (script_path / val_path).resolve()
-    print(val_path)
     df_train = read_data(train_path)
     df_val = read_data(val_path)
 
