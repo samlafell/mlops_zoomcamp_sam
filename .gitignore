@@ -168,3 +168,10 @@ data/*
 **/models/
 **/mlflow.db
 03-orchestration/3.5/create_s3_bucket_block.py
+**/.DS_Store
+02-mlflow/weight_and_biases/aritfacts
+02-mlflow/weight_and_biases/data
+02-mlflow/weight_and_biases/output
+02-mlflow/weight_and_biases/wandb
+.DS_Store
+03-orchestration/.DS_Store
