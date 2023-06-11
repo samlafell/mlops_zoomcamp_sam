@@ -175,3 +175,4 @@ data/*
 02-mlflow/weight_and_biases/wandb
 .DS_Store
 03-orchestration/.DS_Store
+/Users/samlafell/Desktop/mlops_zoomcamp_sam/03-orchestration/prefect-mlops-zoomcamp
