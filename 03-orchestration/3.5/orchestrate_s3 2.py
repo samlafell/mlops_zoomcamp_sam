@@ -15,7 +15,6 @@ from datetime import date
 
 
 @task(retries=3, retry_delay_seconds=2)
-@task(task
 def read_data(filename: str) -> pd.DataFrame:
     """Read data into DataFrame"""
     df = pd.read_parquet(filename)
