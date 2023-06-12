@@ -160,14 +160,13 @@ cython_debug/
 #.idea/
 
 # Data
-data/*
 *.pkl
 *.parquet
 **/artifacts/
 **/mlruns/
 **/models/
 **/mlflow.db
-03-orchestration/3.5/create_s3_bucket_block.py
+03-orchestration/3.5/create_*_block.py
 **/.DS_Store
 02-mlflow/weight_and_biases/aritfacts
 02-mlflow/weight_and_biases/data
