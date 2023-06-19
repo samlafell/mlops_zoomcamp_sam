@@ -10,6 +10,7 @@ requests = "*"
 gunicorn = "*"
 mlflow = "*"
 boto3 = "*"
+ai-commits = "*"
 
 [dev-packages]
 ipykernel = "*"
