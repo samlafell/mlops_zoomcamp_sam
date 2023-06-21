@@ -5,6 +5,7 @@ import mlflow
 # Initialize MLFlow stuff
 # Need to EXPORT RUN_ID in the terminal
 # Services running are: EC2, S3, MLFlow, Flask
+RUN_ID = 'b4d3bca8aa8e46a6b8257fe4541b1136'
 RUN_ID = os.getenv('RUN_ID')
 EXP_ID = '1'
 logged_model = f's3://mlops-week4/{EXP_ID}/{RUN_ID}/artifacts/model'
