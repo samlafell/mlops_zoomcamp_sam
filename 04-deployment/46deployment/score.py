@@ -105,7 +105,7 @@ def ride_duration_prediction(
         ctx = prefect.get_run_context()
         run_date = ctx.flow_run.expected_start_time
         
-    input_file, output_file = get_path_vars(run_date, taxi_type, run_id)
+    input_file, output_file = get_path_vars(run_date, taxi_type)
     
     path = f'output/{taxi_type}'
     isExist = os.path.exists(path)
