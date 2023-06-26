@@ -1,37 +1,23 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from logging import Logger
+
 import os
-
 import sys
-
-import pickle
+import uuid
+import logging
 
 import pandas as pd
-
-import mlflow
-
-from sklearn.feature_extraction import DictVectorizer
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_squared_error
-from sklearn.pipeline import make_pipeline
-
-import pathlib
-
-import uuid
-
 import datetime
 from dateutil.relativedelta import relativedelta
 
+import mlflow
 import prefect
 from prefect import flow, task
 
 # Have to create directory
 # get_ipython().system('mkdir output/green')
 
-
-import logging
 logger = logging.getLogger('log_score.log')
 
 def generate_uuids(n):
