@@ -8,7 +8,7 @@ from prefect.server.schemas.schedules import CronSchedule
 from score import ride_duration_prediction
 
 @flow
-def ride_duration_prediction_backfill():
+def ride_duration_prediction_backfill_nodeploy():
     start_date = datetime(year=2022, month = 3, day = 1)
     end_date = datetime(year=2022, month = 4, day = 1)
     
@@ -24,4 +24,4 @@ def ride_duration_prediction_backfill():
         d += relativedelta(months = 1)
 
 if __name__ == '__main__':
-    ride_duration_prediction_backfill()
+    ride_duration_prediction_backfill_nodeploy()
