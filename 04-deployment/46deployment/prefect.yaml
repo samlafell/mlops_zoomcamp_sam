@@ -14,5 +14,6 @@ push: null
 pull:
 - prefect.projects.steps.git_clone_project:
     repository: git@github.com:samlafell/mlops_zoomcamp_sam.git
+    working_dir: mlops_zoomcamp_sam/04-deployment/46deployment/
     branch: master
     access_token: null

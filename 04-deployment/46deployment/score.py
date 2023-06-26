@@ -96,7 +96,6 @@ def get_path_vars(run_date, taxi_type):
     
     return input_file, output_file
 
-    
 @flow
 def ride_duration_prediction(
         taxi_type: str,
