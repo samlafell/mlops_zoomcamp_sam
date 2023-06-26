@@ -60,10 +60,6 @@ def load_model(exp_id, run_id):
     return mlflow.pyfunc.load_model(logged_model)
 
 @task
-def change_directory():
-    os.chdir('04-deployment/46deployment/')
-
-@task
 def apply_model(input_file, run_id, output_file):
     logger.info(f'reading the data from {input_file}')
     df = read_dataframe(input_file)
