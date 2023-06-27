@@ -1,4 +1,5 @@
 {
   "ride-duration-prediction": "score.py:ride_duration_prediction",
-  "ride-duration-prediction-backfill": "score_backfill.py:ride_duration_prediction_backfill"
+  "ride-duration-prediction-backfill": "score_backfill.py:ride_duration_prediction_backfill",
+  "ride-duration-prediction-backfill-nodeploy": "score_backfill_nodeploycode.py:ride_duration_prediction_backfill_nodeploy"
 }
