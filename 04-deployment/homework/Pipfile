@@ -11,6 +11,7 @@ gunicorn = "*"
 mlflow = "*"
 boto3 = "*"
 nbconvert = "*"
+python-dotenv = "*"
 
 [dev-packages]
 ipykernel = "*"

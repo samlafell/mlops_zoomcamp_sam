@@ -9,8 +9,6 @@ COPY ["Pipfile", "Pipfile.lock", "./"]
 
 RUN pipenv install --system --deploy
 
-COPY ["starter.py", "./"]
+COPY ["starter.py", ".env", "./"]
 
-EXPOSE 9696
-
-RUN python starter.py 'yellow' 2022 4
+ENTRYPOINT ["python3", 'starter.py']
