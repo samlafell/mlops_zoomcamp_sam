@@ -6,13 +6,18 @@ import os
 import boto3
 import sys
 from io import BytesIO
+from dotenv import load_dotenv
+load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
 
 
 with open('model.bin', 'rb') as f_in:
     dv, model = pickle.load(f_in)
 
 # Create boto3
-s3 = boto3.client('s3')
+s3 = boto3.client('s3',
+                  aws_access_key_id=os.getenv('S3_ACCESS_KEY_ID'), 
+                  aws_secret_access_key=os.getenv('S3_SECRET_ACCESS_KEY_ID')
+                )
 
 def read_data(filename):
     df = pd.read_parquet(filename)
@@ -54,12 +59,19 @@ def run():
 
     # Convert dataframe to Parquet and save in buffer
     parquet_buffer = BytesIO()
-    output.to_parquet(parquet_buffer, engine='pyarrow')
+    output.to_parquet(parquet_buffer, 
+                      engine='pyarrow')
 
     # Write buffer to S3 object
-    s3.Object(s3_bucket_name, 'docker_april2022_preds.parquet').put(Body=parquet_buffer.getvalue())
+    ## s3.Object is used with boto3.resource
+    # s3.Object(s3_bucket_name, 'docker_april2022_preds.parquet').put(Body=parquet_buffer.getvalue())
     
-
+    ## s3.put_object is used with boto3.client
+    parquet_buffer.seek(0)
+    s3.put_object(Body = parquet_buffer,
+                  Bucket = s3_bucket_name,
+                  Key = 'docker_april2022_preds.parquet')
+    
 if __name__ == '__main__':
     run()
 

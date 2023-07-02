@@ -11,4 +11,4 @@ RUN pipenv install --system --deploy
 
 COPY ["starter.py", ".env", "./"]
 
-ENTRYPOINT ["python3", 'starter.py']
+ENTRYPOINT ["python3", "starter.py"]
