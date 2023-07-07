@@ -86,19 +86,19 @@ class KinesisCallback():
         )
 
 
-    def init(prediction_stream_name: str,
-            run_id: str,
-            test_run:bool):
-        
-        callbacks = []
-        if not test_run:
-            kinesis_client = boto3.client('kinesis')
-            kinesis_callback = KinesisCallback(
-                kinesis_client, 
-                prediction_stream_name
-            )
-            callbacks.append(kinesis_callback.put_record)
-        
-        model = load_model(run_id)
-        model_service = ModelService(model)
-        return model_service
+def init(prediction_stream_name: str,
+        run_id: str,
+        test_run:bool):
+    
+    callbacks = []
+    if not test_run:
+        kinesis_client = boto3.client('kinesis')
+        kinesis_callback = KinesisCallback(
+            kinesis_client, 
+            prediction_stream_name
+        )
+        callbacks.append(kinesis_callback.put_record)
+    
+    model = load_model(run_id)
+    model_service = ModelService(model)
+    return model_service
