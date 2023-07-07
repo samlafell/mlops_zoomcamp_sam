@@ -4,13 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-boto3 = "*"
-mlflow = "*"
-scikit-learn = "==1.0.2"
-pytest = "*"
 
 [dev-packages]
-pytest = "*"
 
 [requires]
-python_version = "3.10.9"
+python_version = "3.10"
