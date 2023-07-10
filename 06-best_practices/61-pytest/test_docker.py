@@ -23,8 +23,21 @@ event = {
 
 
 url = 'http://localhost:8080/2015-03-31/functions/function/invocations'
-response = requests.post(url, json=event)
-if response.text:
-    print(response.json())
-else:
-    print("Empty response")
+actual_response = requests.post(url, json=event).json()
+import json
+print('actual response:')
+print(json.dumps(actual_response, indent=2))
+
+expected_response = {
+    'predictions': [{
+            'model': 'ride_duration_prediction_model',
+            'version': '602e2fa2a0df4f5a87eef98f93b79090',
+            'prediction': {
+                'ride_duration': 10.0,
+                'ride_id': 256   
+            }
+    }]
+}
+    
+
+assert actual_response == expected_response
