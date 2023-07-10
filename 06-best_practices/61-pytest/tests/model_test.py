@@ -84,4 +84,3 @@ def test_lambda_handler():
     }
     
     assert actual_predictions == expected_predictions
-    
