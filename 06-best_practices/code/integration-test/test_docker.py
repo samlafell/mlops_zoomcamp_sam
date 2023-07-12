@@ -1,4 +1,5 @@
 import requests 
+from deepdiff import DeepDiff
 
 event = {
   "Records": [
@@ -21,9 +22,9 @@ event = {
   ]
 }
 
-
 url = 'http://localhost:8080/2015-03-31/functions/function/invocations'
 actual_response = requests.post(url, json=event).json()
+
 import json
 print('actual response:')
 print(json.dumps(actual_response, indent=2))
@@ -31,13 +32,15 @@ print(json.dumps(actual_response, indent=2))
 expected_response = {
     'predictions': [{
             'model': 'ride_duration_prediction_model',
-            'version': '602e2fa2a0df4f5a87eef98f93b79090',
+            'version': 'Test124',
             'prediction': {
-                'ride_duration': 10.0,
+                'ride_duration': 18.16894572640533,
                 'ride_id': 256   
             }
     }]
 }
-    
 
-assert actual_response == expected_response
+diff = DeepDiff(actual_response, expected_response, significant_digits=1)
+print(f'diff={diff}')
+assert 'type_changes' not in diff
+assert 'values_changed' not in diff

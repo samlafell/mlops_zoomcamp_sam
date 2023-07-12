@@ -6,11 +6,12 @@ name = "pypi"
 [packages]
 boto3 = "*"
 mlflow = "*"
-scikit-learn = "==1.0.2"
+scikit-learn = "==1.2.2"
 pytest = "*"
 
 [dev-packages]
 pytest = "*"
+deepdiff = "*"
 
 [requires]
 python_version = "3.10.9"

@@ -175,3 +175,5 @@ cython_debug/
 .DS_Store
 03-orchestration/.DS_Store
 /Users/samlafell/Desktop/mlops_zoomcamp_sam/03-orchestration/prefect-mlops-zoomcamp
+06-best_practices/**/run.sh
+06-best_practices/**/docker-compose.yaml

@@ -20,7 +20,7 @@ docker run -it --rm \
 
 Mounting the model folder:
 
-```
+```bash
 docker run -it --rm \
     -p 8080:8080 \
     -e PREDICTIONS_STREAM_NAME="ride_predictions" \
@@ -69,7 +69,7 @@ env variables to the `docker-compose.yaml` file:
 
 Without make:
 
-```
+```bash
 isort .
 black .
 pylint --recursive=y .
@@ -78,7 +78,7 @@ pytest tests/
 
 With make:
 
-```
+```bash
 make quality_checks
 make test
 ```
