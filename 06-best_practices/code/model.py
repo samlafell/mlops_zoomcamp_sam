@@ -83,13 +83,23 @@ class ModelService():
         }
 
 
+def create_kinesis_client():
+    endpoint_url = os.getenv('KINESIS_ENDPOINT_URL')
+    print(f'Kinesis Endpoint: {endpoint_url}')
+    print(f'AWS Access Key ID: {os.getenv("AWS_ACCESS_KEY_ID")}')
+    print(f'AWS Secret Access Key: {os.getenv("AWS_SECRET_ACCESS_KEY")}')
+    if not endpoint_url:
+        return boto3.client('kinesis')
+    return boto3.client('kinesis', endpoint_url=endpoint_url)
+
+
 class KinesisCallback():
     def __init__(self, kinesis_client, prediction_stream_name):
         self.kinesis_client = kinesis_client
         self.prediction_stream_name = prediction_stream_name
         
     def put_record(self, prediction_event):
-        ride_id = prediction_event['predictions']['ride_id']
+        ride_id = prediction_event['prediction']['ride_id']
         self.kinesis_client.put_record(
             StreamName=self.prediction_stream_name,
             Data=json.dumps(prediction_event),
