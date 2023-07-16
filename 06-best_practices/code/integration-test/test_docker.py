@@ -1,15 +1,16 @@
-print('importing packages')
-import requests
-from deepdiff import DeepDiff
+# pylint: disable=line-too-long
 import json
+from deepdiff import DeepDiff
+import requests
+print('imported packages')
 
 print('setting event')
 with open('event.json', 'rt', encoding='utf-8') as f_in:
     event = json.load(f_in)
 
 print('making POST request')
-url = 'http://localhost:8080/2015-03-31/functions/function/invocations'
-response = requests.post(url, json=event)
+URL = 'http://localhost:8080/2015-03-31/functions/function/invocations'
+response = requests.post(URL, json=event, timeout=30)
 response.raise_for_status()  # This will raise an exception if the request failed
 actual_response = response.json()
 

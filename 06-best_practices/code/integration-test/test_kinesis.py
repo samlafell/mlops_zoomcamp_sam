@@ -9,12 +9,12 @@ kinesis_endpoint = os.getenv('KINESIS_ENDPOINT_URL', "http://localhost:4566")
 kinesis_client = boto3.client('kinesis', endpoint_url=kinesis_endpoint)
 
 stream_name = os.getenv('PREDICTIONS_STREAM_NAME', 'ride_predictions')
-shard_id = 'shardId-000000000000'
+SHARD_ID = 'shardId-000000000000'
 
 
 shard_iterator_response = kinesis_client.get_shard_iterator(
     StreamName=stream_name,
-    ShardId=shard_id,
+    ShardId=SHARD_ID,
     ShardIteratorType='TRIM_HORIZON',
 )
 

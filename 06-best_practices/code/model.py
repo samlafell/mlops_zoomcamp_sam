@@ -1,7 +1,7 @@
 import os
 import json
-import boto3
 import base64
+import boto3
 
 import mlflow
 
@@ -9,7 +9,7 @@ def get_model_location(run_id):
     model_location = os.getenv('MODEL_LOCATION')
     if model_location:
         return model_location
-    
+   
     model_bucket = os.getenv('MODEL_BUCKET', 'mlops-week4')
     experiment_id = os.getenv('MLFLOW_EXPERIMENT_ID', '1')
     model_location = f's3://{model_bucket}/{experiment_id}/{run_id}/artifacts/model'
@@ -37,7 +37,7 @@ class ModelService():
         
     def prepare_features(self, ride):
         features = {}
-        features['PU_DO'] = '%s_%s' % (ride['PULocationID'], ride['DOLocationID'])
+        features['PU_DO'] = f'{ride["PULocationID"]}_{ride["DOLocationID"]}'
         features['trip_distance'] = ride['trip_distance']
         return features
 
@@ -85,9 +85,9 @@ class ModelService():
 
 def create_kinesis_client():
     endpoint_url = os.getenv('KINESIS_ENDPOINT_URL')
-    print(f'Kinesis Endpoint: {endpoint_url}')
-    print(f'AWS Access Key ID: {os.getenv("AWS_ACCESS_KEY_ID")}')
-    print(f'AWS Secret Access Key: {os.getenv("AWS_SECRET_ACCESS_KEY")}')
+    #print(f'Kinesis Endpoint: {endpoint_url}')
+    #print(f'AWS Access Key ID: {os.getenv("AWS_ACCESS_KEY_ID")}')
+    #print(f'AWS Secret Access Key: {os.getenv("AWS_SECRET_ACCESS_KEY")}')
     if not endpoint_url:
         return boto3.client('kinesis')
     return boto3.client('kinesis', endpoint_url=endpoint_url)
