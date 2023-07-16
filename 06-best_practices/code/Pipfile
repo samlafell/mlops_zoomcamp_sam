@@ -12,7 +12,7 @@ localstack = "*"
 
 [dev-packages]
 pytest = "*"
-pylint = "==2.14.4"
+pylint = "*"
 black = "*"
 isort = "*"
 pre-commit = "*"
