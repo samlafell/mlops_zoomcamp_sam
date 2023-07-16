@@ -111,16 +111,17 @@ def init(prediction_stream_name: str,
         run_id: str,
         test_run:bool):
     
+    # To Init the function and Kinesis callback
+    model = load_model(run_id)
     callbacks = []
+    
+    # Only use Kinesis on a non-test run
     if not test_run:
-        kinesis_client = boto3.client('kinesis')
-        kinesis_callback = KinesisCallback(
-            kinesis_client, 
-            prediction_stream_name
-        )
+        kinesis_client = create_kinesis_client()
+        kinesis_callback = KinesisCallback(kinesis_client, prediction_stream_name)
         callbacks.append(kinesis_callback.put_record)
     
-    model = load_model(run_id)
+    # Load the model
     model_service = ModelService(model, 
                                  model_version=run_id,
                                  callbacks = callbacks)
