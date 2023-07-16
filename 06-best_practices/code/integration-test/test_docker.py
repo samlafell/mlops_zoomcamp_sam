@@ -1,7 +1,9 @@
 # pylint: disable=line-too-long
 import json
-from deepdiff import DeepDiff
+
 import requests
+from deepdiff import DeepDiff
+
 print('imported packages')
 
 print('setting event')
@@ -18,14 +20,13 @@ print('actual response:')
 print(json.dumps(actual_response, indent=2))
 
 expected_response = {
-    'predictions': [{
+    'predictions': [
+        {
             'model': 'ride_duration_prediction_model',
             'version': 'Test123',
-            'prediction': {
-                'ride_duration': 18.16894572640533,
-                'ride_id': 256   
-            }
-    }]
+            'prediction': {'ride_duration': 18.16894572640533, 'ride_id': 256},
+        }
+    ]
 }
 
 diff = DeepDiff(actual_response, expected_response, significant_digits=1)
