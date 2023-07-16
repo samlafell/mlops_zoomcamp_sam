@@ -20,7 +20,6 @@ shard_iterator_response = kinesis_client.get_shard_iterator(
 
 shard_iterator_id = shard_iterator_response['ShardIterator']
 
-
 records_response = kinesis_client.get_records(
     ShardIterator=shard_iterator_id,
     Limit=1,
