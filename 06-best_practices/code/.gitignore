@@ -1,4 +1,2 @@
-/home/ubuntu/mlops_zoomcamp_sam/06-best_practices/code/__pycache__
-__pycache__
-/home/ubuntu/mlops_zoomcamp_sam/06-best_practices/code/integration-test/model/model.pkl
 .pkl
+**/__pycache__
