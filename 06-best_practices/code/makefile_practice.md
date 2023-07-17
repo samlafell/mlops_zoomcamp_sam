@@ -22,3 +22,4 @@ How can we avoid having to do this manually?
 - Let's pretend that 06-bestpractices/code is its own folder
     - go to code folder, and run `git init`
     - pretend its a stand alone repo for the sake of the video
+
