@@ -12,6 +12,12 @@ isort = "*"
 black = "*"
 pre-commit = "*"
 polars = "*"
+plotly = "*"
+pandas = "*"
+pyarrow = "*"
+nbformat = ">=4.2.0"
+jupyter = "*"
+notebook = "*"
 
 [dev-packages]
 ipykernel = "*"
