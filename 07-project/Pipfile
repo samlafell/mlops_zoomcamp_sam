@@ -15,7 +15,6 @@ polars = "*"
 plotly = "*"
 pandas = "*"
 pyarrow = "*"
-nbformat = ">=4.2.0"
 jupyter = "*"
 notebook = "*"
 
