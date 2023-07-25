@@ -17,6 +17,10 @@ pandas = "*"
 pyarrow = "*"
 jupyter = "*"
 notebook = "*"
+pandas-profiling = "*"
+hyperopt = "*"
+xgboost = "*"
+mlflow = "*"
 
 [dev-packages]
 ipykernel = "*"
