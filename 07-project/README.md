@@ -1,7 +1,7 @@
-dengue_fever
+Wine Quality
 ==============================
 
-A project to predict Dengue Fever
+A project to predict Wine Quality given many factors.
 
 Project Organization
 ------------
