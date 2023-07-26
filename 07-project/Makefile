@@ -5,16 +5,10 @@
 #################################################################################
 
 PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-BUCKET = dengue-fever
+BUCKET = wine-quality
 PROFILE = default
-PROJECT_NAME = dengue_fever
-PYTHON_INTERPRETER = python3
-
-ifeq (,$(shell which conda))
-HAS_CONDA=False
-else
-HAS_CONDA=True
-endif
+PROJECT_NAME = wine_quality
+PYTHON_INTERPRETER = python
 
 #################################################################################
 # COMMANDS                                                                      #
@@ -22,12 +16,15 @@ endif
 
 ## Install Python Dependencies
 requirements: test_environment
-	$(PYTHON_INTERPRETER) -m pip install -U pip setuptools wheel
-	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
+	pipenv install
 
 ## Make Dataset
 data: requirements
 	$(PYTHON_INTERPRETER) src/data/make_dataset.py data/raw data/processed
+
+## Train Model
+train:
+	$(PYTHON_INTERPRETER) src/model_code/train_model.py data/processed
 
 ## Delete all compiled Python files
 clean:
