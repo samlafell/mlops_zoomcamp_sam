@@ -14,9 +14,11 @@ import mlflow
 from sklearn.metrics import mean_squared_error
 import os
 
+import configparser
+
 # Set MLFlow Tracking URI
-logging.info(f'tracking uri before defining: {mlflow.get_tracking_uri()}')
-mlflow.set_tracking_uri(os.environ['MLFLOW_TRACKING_URI'])
+# logging.info(f'tracking uri before defining: {mlflow.get_tracking_uri()}')
+mlflow.set_tracking_uri('http://localhost:5000')
 logging.info(f'tracking uri: {mlflow.get_tracking_uri()}')
 
 # Set Experiment
@@ -55,8 +57,8 @@ def convert_to_numpy(**args):
 
 @click.command()
 @click.argument('data_filepath', type=click.Path(exists=True))
-@click.argument('early_stopping_rounds', type=click.INT)
-def main(data_filepath):
+@click.argument('early_stopping_rounds_var', type=click.INT)
+def main(data_filepath, early_stopping_rounds_var):
     """
     Training Model
     """
@@ -112,7 +114,7 @@ def main(data_filepath):
                 dtrain=train,
                 num_boost_round=1000,
                 evals=[(valid, 'validation')],
-                early_stopping_rounds=early_stopping_rounds,
+                early_stopping_rounds=early_stopping_rounds_var,
             )
             y_pred = booster.predict(valid)
             rmse = mean_squared_error(y_val, y_pred, squared=False)
