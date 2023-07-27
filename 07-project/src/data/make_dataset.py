@@ -23,112 +23,108 @@ def import_data(df_path: Path) -> pl.DataFrame():
 def export_data(output_path, df):
     """
     Export Data
-    
+
     Args:
         output_path (pathlib.Path): Give path of data
         df (polars.DataFrame): Return Polars Dataframe
-        
+
     Returns:
         None
     """
-    logging.info(f'exporting {df} to {output_path}')
-    with open(output_path, 'w') as f:
+    logging.info(f"exporting {df} to {output_path}")
+    with open(output_path, "w", encoding="utf8") as f:
         df.write_csv(f)
-    
+
 
 class Preprocessor:
+    # pylint: disable=missing-module-docstring
+    """ """
+
     def __init__(self, data):
         self.data = data
 
     def shuffle_data(self):
-        ids_shuffled = self.data.select(pl.col('Id').shuffle(seed=42))
-        self.data = self.data.join(ids_shuffled, how = 'inner', on = 'Id')
-        return self
+        """ """
+        ids_shuffled = self.data.select(pl.col("Id").shuffle(seed=42))
+        self.data = self.data.join(ids_shuffled, how="inner", on="Id")
+        return self.data
 
-    def split_data(self):
-        data_rows = self.data.shape[0]
-        self.data_train = self.data.slice(0, int(data_rows * 0.7))
-        self.data_val = self.data.slice(int(data_rows * 0.7), int(data_rows * 0.15))
-        self.data_test = self.data.slice(int(data_rows * 0.85), data_rows)
-        return self
+    def split_data(self, data):
+        """ """
+        data_rows = data.shape[0]
+        data_train = data.slice(0, int(data_rows * 0.7))
+        data_val = data.slice(int(data_rows * 0.7), int(data_rows * 0.15))
+        data_test = data.slice(int(data_rows * 0.85), data_rows)
+        return data_train, data_val, data_test
 
-    def split_X_y(self):
-        self.X_train = self.data_train.drop('quality', 'Id')
-        self.y_train = self.data_train.select('quality')
+    def split_X_y(self, data):
+        """ """
+        X = data.drop("quality", "Id")
+        y = data.select("quality")
+        return X, y
 
-        self.X_val = self.data_val.drop('quality', 'Id')
-        self.y_val = self.data_val.select('quality')
-
-        self.X_test = self.data_test.drop('quality', 'Id')
-        self.y_test = self.data_test.select('quality')
-
-        return self
-
-    def standardize_data(self):
+    def standardize_data(self, data):
         """
-        This is done to make sure that the data is centered around 0 and has a standard deviation of 1
+        To get to STD 1 and Mean 0
         Polars does not have a built in standardization function, so we have to do it manually
-        This is done separately for each dataset to avoid data leakage        
+        This is done separately for each dataset to avoid data leakage
         """
-        for dataset in [self.X_train, self.X_val, self.X_test]:
-            for col_name in dataset.columns:
-                col_mean = dataset[col_name].mean()
-                col_std = dataset[col_name].std()
-                dataset = dataset.with_columns(((dataset[col_name] - col_mean) / col_std).alias(f'{col_name}_std'))
-            dataset = dataset.lazy().select(cs.ends_with('std')).collect()
+        for col_name in data.columns:
+            col_mean = data[col_name].mean()
+            col_std = data[col_name].std()
+            data = data.with_columns(
+                ((data[col_name] - col_mean) / col_std).alias(f"{col_name}_std")
+            )
+        data = data.lazy().select(cs.ends_with("std")).collect()
+        return data
 
-        return self
+
+def process_and_save_data(data, processor, name, output_filepath):
+    """Processes data using the given processor and saves it to a file."""
+    X, y = processor.split_X_y(data)
+    X = processor.standardize_data(X)
+
+    for dataset_name, dataset in [(f"X_{name}", X), (f"y_{name}", y)]:
+        export_data(
+            output_path=Path(output_filepath, f"{dataset_name}.csv"), df=dataset
+        )
 
 
 @click.command()
-@click.argument('input_filepath', type=click.Path(exists=True))
-@click.argument('output_filepath', type=click.Path())
+@click.argument("input_filepath", type=click.Path(exists=True))
+@click.argument("output_filepath", type=click.Path())
 def main(input_filepath, output_filepath):
-    """ Runs data processing scripts to turn raw data from (../raw) into
-        cleaned data ready to be analyzed (saved in ../processed).
+    """Runs data processing scripts to turn raw data from (../raw) into
+    cleaned data ready to be analyzed (saved in ../processed).
     """
     logger = logging.getLogger(__name__)
-    logger.info('making final data set from raw data')
-    
+    logger.info("making final data set from raw data")
+
     # Import data
-    logger.info(f'input filepath is {input_filepath}')
-    data = import_data(df_path = Path(input_filepath, 'WineQT.csv').resolve())
+    logger.info(f"input filepath is {input_filepath}")
+    data = import_data(df_path=Path(input_filepath, "WineQT.csv").resolve())
 
-    # Run Preprocessing
+    # Initialize Pre-Processor
     preprocessor = Preprocessor(data)
-    preprocessor.shuffle_data().split_data().split_X_y().standardize_data()
-    logger.info('Initialized Preprocessor')
 
-    X_train = preprocessor.X_train
-    y_train = preprocessor.y_train
+    # Shuffle the Data
+    shuffled_data = preprocessor.shuffle_data()
 
-    X_val = preprocessor.X_val
-    y_val = preprocessor.y_val
+    # Split
+    data_train, data_val, data_test = preprocessor.split_data(shuffled_data)
 
-    X_test = preprocessor.X_test
-    y_test = preprocessor.y_test
-    logger.info('Finished Preprocessing')
-    
-    data_dict = {
-        'X_train': X_train,
-        "y_train": y_train,
-        "X_val": X_val,
-        "y_val": y_val,
-        "X_test": X_test,
-        "y_test": y_test
-    }
+    # Process and save data
+    logger.info("Saving data to csv")
+    process_and_save_data(data_train, preprocessor, "train", output_filepath)
+    process_and_save_data(data_val, preprocessor, "val", output_filepath)
+    process_and_save_data(data_test, preprocessor, "test", output_filepath)
+    logger.info("Finished saving data to csv")
 
-    logger.info('Saving data to csv')
-    for dataset_name, dataset in data_dict.items():
-        export_data(output_path = Path(output_filepath, f'{dataset_name}.csv'), df = dataset)
-    logger.info('Finished saving data to csv')
 
-    return X_train, y_train, X_val, y_val, X_test, y_test
-    
-
-if __name__ == '__main__':
-    log_fmt = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    logging.basicConfig(level=logging.INFO, format=log_fmt)
+if __name__ == "__main__":
+    # pylint: disable=no-value-for-parameter
+    LOG_FMT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    logging.basicConfig(level=logging.INFO, format=LOG_FMT)
 
     # not used in this stub but often useful for finding various files
     project_dir = Path(__file__).resolve().parents[2]
