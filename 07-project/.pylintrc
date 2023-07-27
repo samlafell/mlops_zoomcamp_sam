@@ -1,2 +1,2 @@
 [MESSAGES CONTROL]
-disable=invalid-name,logging-fstring-interpolation,empty-docstring,missing-module-docstring
+disable=invalid-name,logging-fstring-interpolation,empty-docstring,missing-module-docstring,unused-import
