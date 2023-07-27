@@ -1,5 +1,5 @@
-import logging
 from pathlib import Path
+import logging
 import click
 from dotenv import find_dotenv, load_dotenv
 import polars as pl
@@ -12,11 +12,13 @@ from numpy import ndarray
 from xgboost import DMatrix
 import mlflow
 from sklearn.metrics import mean_squared_error
+import os
 
 # Set MLFlow Tracking URI
 logging.info(f'tracking uri before defining: {mlflow.get_tracking_uri()}')
-mlflow.set_tracking_uri("http://localhost:5001")
+mlflow.set_tracking_uri(os.environ['MLFLOW_TRACKING_URI'])
 logging.info(f'tracking uri: {mlflow.get_tracking_uri()}')
+
 # Set Experiment
 mlflow.set_experiment('wine_dataset')
 

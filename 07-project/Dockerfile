@@ -24,6 +24,9 @@ COPY Pipfile Pipfile.lock ./
 # Install the dependencies
 RUN pipenv install --system --deploy
 
+# Set
+ENV MLFLOW_TRACKING_URI=s3://sal-wine-quality/models/
+
 # # Copy src/, data/, notebooks/, Makefile from your local system into the Docker image
 # COPY src/ src/
 # COPY data/ data/
