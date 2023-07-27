@@ -17,10 +17,15 @@ import os
 import configparser
 
 # Set MLFlow Tracking URI
-# logging.info(f'tracking uri before defining: {mlflow.get_tracking_uri()}')
-mlflow.set_tracking_uri('http://localhost:5000')
-logging.info(f'tracking uri: {mlflow.get_tracking_uri()}')
 
+# From EC2
+mlflow.set_tracking_uri('http://localhost:5000')
+
+# From Local
+#ec2_public_ipv4 = 'ec2-3-14-150-154.us-east-2.compute.amazonaws.com'
+#mlflow.set_tracking_uri(f'http://{ec2_public_ipv4}:5000')
+
+logging.info(f'tracking uri: {mlflow.get_tracking_uri()}')
 # Set Experiment
 mlflow.set_experiment('wine_dataset')
 
@@ -142,5 +147,7 @@ if __name__ == '__main__':
     # find .env automagically by walking up directories until it's found, then
     # load up the .env entries as environment variables
     load_dotenv(find_dotenv())
-
+    #for name, value in os.environ.items():
+    #    print("{0}: {1}".format(name, value))
+    
     main()

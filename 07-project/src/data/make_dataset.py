@@ -3,9 +3,10 @@ import logging
 from pathlib import Path
 
 import click
-from dotenv import find_dotenv, load_dotenv
 import polars as pl
 import polars.selectors as cs
+from dotenv import find_dotenv, load_dotenv
+
 
 def import_data(df_path: Path) -> pl.DataFrame():
     """Import Data
@@ -30,6 +31,7 @@ def export_data(output_path, df):
     Returns:
         None
     """
+    logging.info(f'exporting {df} to {output_path}')
     with open(output_path, 'w') as f:
         df.write_csv(f)
     
