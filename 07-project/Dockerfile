@@ -27,6 +27,9 @@ RUN pipenv install --system --deploy
 # Set
 ENV MLFLOW_TRACKING_URI=s3://sal-wine-quality/models/
 
+# Train
+CMD ["python", "src/train.py"]
+
 # # Copy src/, data/, notebooks/, Makefile from your local system into the Docker image
 # COPY src/ src/
 # COPY data/ data/
