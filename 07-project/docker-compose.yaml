@@ -1,12 +1,67 @@
+version: '3.8'
+
+volumes: 
+  grafana_data: {}
+  postgres_data: {}
+
+networks:
+  front-tier:
+  back-tier:
+
 services:
-  backend:
-    image: ${LOCAL_IMAGE_NAME}
+  adminer:
+    image: adminer
+    restart: always
     ports:
       - "8080:8080"
-    environment:
-      - PREDICTIONS_STREAM_NAME=${PREDICTIONS_STREAM_NAME}
-      - RUN_ID=Test123
-      - AWS_DEFAULT_REGION=us-east-2
-      - MODEL_LOCATION=/app/model
+    networks:
+      - back-tier
+      - front-tier  
+
+  grafana:
+    image: grafana/grafana
+    user: "472"
+    ports:
+      - "3000:3000"
     volumes:
-      - "./model:/app/model"
+      - grafana_data:/var/lib/grafana
+      - ./config/grafana_datasources.yaml:/etc/grafana/provisioning/datasources/datasource.yaml:ro
+      - ./config/grafana_dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro
+      - ./dashboards:/opt/grafana/dashboards
+    networks:
+      - back-tier
+      - front-tier
+    restart: always
+
+  flask-app:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ~/.aws/credentials:/root/.aws/credentials
+    depends_on:
+      - mlflow-server
+    environment:
+      MLFLOW_TRACKING_URI: "http://mlflow-server:5001"
+    networks:
+      - front-tier
+      
+  mlflow-server:
+    image: wine_quality
+    ports:
+      - "5001:5001"
+    volumes:
+      - ~/.aws/credentials:/root/.aws/credentials
+    command: 
+      - "mlflow"
+      - "server"
+      - "-h"
+      - "0.0.0.0"
+      - "-p"
+      - "5000"
+      - "--backend-store-uri"
+      - "postgresql://mlflow:9xh2Om9ryDbpPWLoFe8z@mlflow-project-db-ubuntu-2.cdflealfthrn.us-east-2.rds.amazonaws.com:5432/mlflow_db"
+      - "--default-artifact-root"
+      - "s3://sal-wine-quality"
+    networks:
+      - back-tier

@@ -6,7 +6,15 @@ FROM python:3.10-bullseye
 WORKDIR /app
 
 # Add current directory contents to the container at /app
-ADD . /app
+COPY src/ /app/src
+COPY tests/ /app/tests
+COPY config/ /app/config
+COPY data/ /app/data
+COPY .vscode/ /app/.vscode
+COPY utils/ /app/utils
+COPY *.py /app/
+COPY Makefile /app/
+COPY columns.json /app/columns.json
 
 # Make sure pip is up to date
 RUN pip install -U pip
@@ -17,10 +25,3 @@ COPY Pipfile Pipfile.lock ./
 
 # Install the dependencies
 RUN pipenv install --system --deploy
-
-# Make port 8080 available for the app
-EXPOSE 8000
-EXPOSE 5001
-
-# Train
-CMD ["./start.sh"]

@@ -2,6 +2,9 @@ from flask import Flask, request, jsonify
 from utils.load_model import ModelService, standardize_data
 import logging
 import polars as pl
+from datetime import datetime
+from io import StringIO
+import boto3
 
 app = Flask(__name__)
 
@@ -29,9 +32,24 @@ def predict():
     # Grab necessary columns, apply z-score scaling
     df_std = standardize_data(df, id_col="Id")
     predictions = model.predict(df_std)
+    
+    df = df.with_columns(pl.Series(predictions).alias("predictions"))
+    # Output predictions to csv
+    preds_df = df.select('Id', 'predictions').to_pandas()
+    csv_buffer = StringIO()
+    preds_df.to_csv(csv_buffer, index=False)
 
+    # Output to S3
+    date = datetime.now().date().strftime("%Y%m%d")
+    s3_resource = boto3.resource("s3")
+    s3_resource.Object(
+        "sal-wine-quality",
+        f"models/{model_service.model_name}/preds/{date}/predictions.csv",
+    ).put(Body=csv_buffer.getvalue())
+    
     predictions = [float(value) for value in predictions]
+    
     return jsonify({"ID": list(df["Id"]), "predictions": predictions})
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8000, debug=True)
+    app.run(host='0.0.0.0', port=8000)
