@@ -21,6 +21,7 @@ pandas-profiling = "*"
 hyperopt = "*"
 xgboost = "*"
 mlflow = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 ipykernel = "*"

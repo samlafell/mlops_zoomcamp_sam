@@ -37,8 +37,8 @@ data: requirements
 	$(PYTHON_INTERPRETER) src/data/make_dataset.py data/raw data/processed
 
 ## Train Model
-train:
-	$(PYTHON_INTERPRETER) src/model_code/train_model.py data/processed
+train: requirements
+	$(PYTHON_INTERPRETER) src/model_code/train_model.py data/processed 10
 
 ## Delete all compiled Python files
 clean:

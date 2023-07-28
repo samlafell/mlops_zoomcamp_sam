@@ -2,11 +2,12 @@
 import logging
 from pathlib import Path
 from typing import Any, Dict
-
+import numpy as np
 import click
 import mlflow
 import polars as pl
 import polars.selectors as cs
+
 # More Models
 import xgboost as xgb
 from dotenv import find_dotenv, load_dotenv
@@ -18,7 +19,7 @@ from xgboost import DMatrix
 
 # Set MLFlow Tracking URI
 # From EC2
-mlflow.set_tracking_uri("http://localhost:5000")
+mlflow.set_tracking_uri("http://localhost:5001")
 
 # From Local
 # ec2_public_ipv4 = 'ec2-3-14-150-154.us-east-2.compute.amazonaws.com'
@@ -36,7 +37,9 @@ SEARCH_SPACE = {
     "objective": "multi:softmax",
     "num_class": 9,
     "seed": 42,
+    "eval_metric": hp.choice("eval_metric", ['mlogloss'])  # or any other metrics you want to try
 }
+
 
 class ImportData:
     def __init__(self, data_filepath):
@@ -57,11 +60,11 @@ class ImportData:
         self.X_val = pl.read_csv(X_val_path)
         self.y_val = pl.read_csv(y_val_path)
         return self
-        
+
     def convert_to_numpy(self):
-        X_train = self.X_train.select(cs.ends_with('_std'))
-        y_train = self.y_train.select(cs.ends_with('_std'))
-        datasets = [X_train, y_train, self.X_val, self.y_val]
+        X_train = self.X_train.select(cs.ends_with("_std"))
+        X_val = self.X_val.select(cs.ends_with("_std"))
+        datasets = [X_train, self.y_train, X_val, self.y_val]
         assert all(
             dataset is not None for dataset in datasets
         ), "One of the train/validation datasets does not exist"
@@ -80,7 +83,7 @@ def objective(
     train: xgb.DMatrix,
     valid: xgb.DMatrix,
     y_val: pl.DataFrame,
-    early_stopping_rounds_var: int,
+    metrics: str,
 ) -> Dict[str, Any]:
     """
     Train an XGBoost model with given parameters and datasets, log the training
@@ -99,13 +102,15 @@ def objective(
         mlflow.set_tag("model", "xgboost")
         mlflow.log_params(params)
         mlflow.xgboost.autolog()
+            
         booster = xgb.train(
-            params=params,
+            params={**params, 'eval_metric': metrics},
             dtrain=train,
             num_boost_round=1000,
             evals=[(valid, "validation")],
-            early_stopping_rounds=early_stopping_rounds_var,
+            early_stopping_rounds=50,
         )
+    
         y_pred = booster.predict(valid)
         rmse = mean_squared_error(y_val, y_pred, squared=False)
         mlflow.log_metric("rmse", rmse)
@@ -115,8 +120,8 @@ def objective(
 
 @click.command()
 @click.argument("data_filepath", type=click.Path(exists=True))
-@click.argument("early_stopping_rounds_var", type=click.INT)
-def main(data_filepath, early_stopping_rounds_var):
+@click.argument("max_evals_var", type=click.INT)
+def main(data_filepath, max_evals_var):
     # pylint: disable=unused-variable,unbalanced-tuple-unpacking
     """
     Training Model
@@ -138,11 +143,11 @@ def main(data_filepath, early_stopping_rounds_var):
     logging.info("starting hyperparameter search")
     best_result = fmin(
         fn=lambda params: objective(
-            params, train, valid, importing.y_val, early_stopping_rounds_var
+            params, train, valid, importing.y_val, params['eval_metric']
         ),
         space=SEARCH_SPACE,
         algo=tpe.suggest,
-        max_evals=50,
+        max_evals=max_evals_var,
         trials=Trials(),
     )
 

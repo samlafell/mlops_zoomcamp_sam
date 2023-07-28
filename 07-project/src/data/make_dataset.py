@@ -64,7 +64,7 @@ class Preprocessor:
         y = data.select("quality")
         return X, y
 
-    def standardize_data(self, data, id_col = 'Id'):
+    def standardize_data(self, data, id_col="Id"):
         """
         To get to STD 1 and Mean 0
         Polars does not have a built in standardization function, so we have to do it manually
@@ -90,11 +90,7 @@ def create_streaming_date_column(data, starting_date=datetime(2023, 1, 1)):
     # Generate a list of dates with two of each date
     dates = [starting_date + timedelta(days=i // 2) for i in range(num_rows)]
 
-    # Add the dates series to the DataFrame
-    new_data = data.with_columns(pl.Series(dates).alias('date'))
-    
-    # Save the DataFrame back to a CSV file
-    return new_data
+    return data.with_columns(pl.Series(dates).alias("date"))
 
 
 def process_and_save_data(data, processor, name, output_filepath):
