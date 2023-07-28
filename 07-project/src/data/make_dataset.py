@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import click
@@ -31,7 +32,7 @@ def export_data(output_path, df):
     Returns:
         None
     """
-    logging.info(f"exporting {df} to {output_path}")
+    logging.info(f"exporting df to {output_path}")
     with open(output_path, "w", encoding="utf8") as f:
         df.write_csv(f)
 
@@ -59,28 +60,46 @@ class Preprocessor:
 
     def split_X_y(self, data):
         """ """
-        X = data.drop("quality", "Id")
+        X = data.drop("quality")
         y = data.select("quality")
         return X, y
 
-    def standardize_data(self, data):
+    def standardize_data(self, data, id_col = 'Id'):
         """
         To get to STD 1 and Mean 0
         Polars does not have a built in standardization function, so we have to do it manually
         This is done separately for each dataset to avoid data leakage
         """
-        for col_name in data.columns:
-            col_mean = data[col_name].mean()
-            col_std = data[col_name].std()
-            data = data.with_columns(
-                ((data[col_name] - col_mean) / col_std).alias(f"{col_name}_std")
-            )
-        data = data.lazy().select(cs.ends_with("std")).collect()
+        cols_to_grab = data.select(cs.integer().exclude(id_col), cs.float()).columns
+        for col_name in cols_to_grab:
+            if col_name == id_col:
+                None
+            else:
+                col_mean = data[col_name].mean()
+                col_std = data[col_name].std()
+                data = data.with_columns(
+                    ((data[col_name] - col_mean) / col_std).alias(f"{col_name}_std")
+                )
         return data
+
+
+def create_streaming_date_column(data, starting_date=datetime(2023, 1, 1)):
+    # Find the number of rows in the DataFrame
+    num_rows = data.shape[0]
+
+    # Generate a list of dates with two of each date
+    dates = [starting_date + timedelta(days=i // 2) for i in range(num_rows)]
+
+    # Add the dates series to the DataFrame
+    new_data = data.with_columns(pl.Series(dates).alias('date'))
+    
+    # Save the DataFrame back to a CSV file
+    return new_data
 
 
 def process_and_save_data(data, processor, name, output_filepath):
     """Processes data using the given processor and saves it to a file."""
+
     X, y = processor.split_X_y(data)
     X = processor.standardize_data(X)
 
@@ -117,6 +136,7 @@ def main(input_filepath, output_filepath):
     logger.info("Saving data to csv")
     process_and_save_data(data_train, preprocessor, "train", output_filepath)
     process_and_save_data(data_val, preprocessor, "val", output_filepath)
+    data_test = create_streaming_date_column(data_test)
     process_and_save_data(data_test, preprocessor, "test", output_filepath)
     logger.info("Finished saving data to csv")
 

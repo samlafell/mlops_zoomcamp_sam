@@ -54,7 +54,6 @@ class ModelService:
 
 class Data:
     def __init__(self, project_dir):
-        # not used in this stub but often useful for finding various files
         self.data_dir = project_dir / "data" / "processed"
 
     def load_features(self):
@@ -68,6 +67,9 @@ class Data:
 
 # Hashing function
 def create_hash(row):
+    """
+    Creating a hash for each unique row in the input data so when we make predictions we know how to pair up to the rows
+    """
     # create a hash object
     hash_object = hashlib.md5(row.encode())
     # get the hexadecimal representation of the hash

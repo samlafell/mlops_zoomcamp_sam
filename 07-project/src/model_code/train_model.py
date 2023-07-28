@@ -6,7 +6,7 @@ from typing import Any, Dict
 import click
 import mlflow
 import polars as pl
-
+import polars.selectors as cs
 # More Models
 import xgboost as xgb
 from dotenv import find_dotenv, load_dotenv
@@ -27,7 +27,6 @@ logging.info(f"tracking uri: {mlflow.get_tracking_uri()}")
 # Set Experiment
 mlflow.set_experiment("wine_dataset")
 
-
 SEARCH_SPACE = {
     "max_depth": scope.int(hp.quniform("max_depth", 4, 100, 1)),
     "learning_rate": hp.loguniform("learning_rate", -3, 0),
@@ -38,7 +37,6 @@ SEARCH_SPACE = {
     "num_class": 9,
     "seed": 42,
 }
-
 
 class ImportData:
     def __init__(self, data_filepath):
@@ -59,9 +57,11 @@ class ImportData:
         self.X_val = pl.read_csv(X_val_path)
         self.y_val = pl.read_csv(y_val_path)
         return self
-
+        
     def convert_to_numpy(self):
-        datasets = [self.X_train, self.y_train, self.X_val, self.y_val]
+        X_train = self.X_train.select(cs.ends_with('_std'))
+        y_train = self.y_train.select(cs.ends_with('_std'))
+        datasets = [X_train, y_train, self.X_val, self.y_val]
         assert all(
             dataset is not None for dataset in datasets
         ), "One of the train/validation datasets does not exist"
