@@ -1,7 +1,7 @@
 import mlflow
 from mlflow.tracking import MlflowClient
 
-mlflow.set_tracking_uri("http://0.0.0.0:5000")
+mlflow.set_tracking_uri("http://0.0.0.0:5001")
 mlflow_client = MlflowClient()
 
 # Get the experiment by name
@@ -9,13 +9,15 @@ experiment = mlflow_client.get_experiment_by_name("wine_dataset")
 
 if experiment is not None:
     experiment_id = experiment.experiment_id
-    runs = mlflow_client.search_runs(experiment_ids=[experiment_id])
-
-    # Check if there are any runs for the experiment
-    if runs:
+    if runs := mlflow_client.search_runs(experiment_ids=[experiment_id]):
+        # # Sorting the runs by their metrics.rmse in ascending order
+        # sorted_runs = sorted(
+        #     runs, key=lambda run: run.data.metrics["validation-mlogloss"]
+        # )
+        
         # Sorting the runs by their metrics.rmse in ascending order
         sorted_runs = sorted(
-            runs, key=lambda run: run.data.metrics["validation-mlogloss"]
+            runs, key=lambda run: run.info.start_time, reverse=True
         )
 
         # Get the best run (the one with the lowest rmse)
@@ -29,8 +31,7 @@ if experiment is not None:
         # Register the model from the best run
         result = mlflow_client.create_model_version(
             name=model_name,
-            source=best_run.info.artifact_uri
-            + "/model",  # adjust this path according to where your model is stored in the artifact repository
+            source=f"{best_run.info.artifact_uri}/model",
             run_id=best_run.info.run_id,
         )
         print(f"Registered model version: {result.version}")

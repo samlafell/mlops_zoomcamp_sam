@@ -7,6 +7,7 @@ import click
 import mlflow
 import polars as pl
 import polars.selectors as cs
+import json
 
 # More Models
 import xgboost as xgb
@@ -114,6 +115,8 @@ def objective(
         y_pred = booster.predict(valid)
         rmse = mean_squared_error(y_val, y_pred, squared=False)
         mlflow.log_metric("rmse", rmse)
+        # Log the columns file as an artifact
+        mlflow.log_artifact("columns.json")
 
     return {"loss": rmse, "status": STATUS_OK}
 
@@ -133,6 +136,12 @@ def main(data_filepath, max_evals_var):
     importing = ImportData(data_filepath)
     # Import Data
     importing.import_data()
+    
+    # Select original columns in dataframe
+    columns = importing.X_train.select(~cs.ends_with("_std")).columns
+    with open("columns.json", "w") as f:
+        json.dump(columns, f)
+    
     # Prepare for Training
     X_train_np, y_train_np, X_val_np, y_val_np = importing.convert_to_numpy()
 
