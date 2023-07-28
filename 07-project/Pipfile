@@ -22,6 +22,8 @@ hyperopt = "*"
 xgboost = "*"
 mlflow = "*"
 psycopg2-binary = "*"
+s3fs = "*"
+psycopg = "*"
 
 [dev-packages]
 ipykernel = "*"

@@ -9,6 +9,16 @@ networks:
   back-tier:
 
 services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+    ports:
+      - "5432:5432"
+    networks:
+      - back-tier
+
   adminer:
     image: adminer
     restart: always

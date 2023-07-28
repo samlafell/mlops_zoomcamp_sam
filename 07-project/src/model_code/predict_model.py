@@ -54,12 +54,9 @@ class DataLoader:
     def __init__(self, project_dir):
         self.data_dir = project_dir / "data" / "processed"
 
-    def load_features(self):
+    def data(self):
         self.data = pl.read_csv(self.data_dir / "X_test.csv")
         return self
-
-    def load_labels(self):
-        return pl.read_csv(self.data_dir / "y_test.csv")
 
 def date_iter_var(data):
     return data.select(pl.col("date")).unique().to_series().to_list()

@@ -58,21 +58,21 @@ class Preprocessor:
         data_test = data.slice(int(data_rows * 0.85), data_rows)
         return data_train, data_val, data_test
 
-    def split_X_y(self, data):
-        """ """
-        X = data.drop("quality")
-        y = data.select("quality")
-        return X, y
+    # def split_X_y(self, data):
+    #     """ """
+    #     X = data.drop("quality")
+    #     y = data.select("quality")
+    #     return X, y
 
-    def standardize_data(self, data, id_col="Id"):
+    def standardize_data(self, data, id="Id", target="quality"):
         """
         To get to STD 1 and Mean 0
         Polars does not have a built in standardization function, so we have to do it manually
         This is done separately for each dataset to avoid data leakage
         """
-        cols_to_grab = data.select(cs.integer().exclude(id_col), cs.float()).columns
+        cols_to_grab = data.select(cs.integer().exclude(id, target), cs.float()).columns
         for col_name in cols_to_grab:
-            if col_name == id_col:
+            if col_name == id:
                 None
             else:
                 col_mean = data[col_name].mean()
@@ -96,10 +96,9 @@ def create_streaming_date_column(data, starting_date=datetime(2023, 1, 1)):
 def process_and_save_data(data, processor, name, output_filepath):
     """Processes data using the given processor and saves it to a file."""
 
-    X, y = processor.split_X_y(data)
-    X = processor.standardize_data(X)
-
-    for dataset_name, dataset in [(f"X_{name}", X), (f"y_{name}", y)]:
+    data_with_features = processor.standardize_data(data)
+    
+    for dataset_name, dataset in [(name, data_with_features)]:
         export_data(
             output_path=Path(output_filepath, f"{dataset_name}.csv"), df=dataset
         )

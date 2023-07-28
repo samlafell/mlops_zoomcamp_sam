@@ -1,14 +1,14 @@
 # pylint disable=unused-import
+import json
 import logging
 from pathlib import Path
 from typing import Any, Dict
-import numpy as np
+
 import click
 import mlflow
+import numpy as np
 import polars as pl
 import polars.selectors as cs
-import json
-
 # More Models
 import xgboost as xgb
 from dotenv import find_dotenv, load_dotenv
@@ -45,31 +45,25 @@ SEARCH_SPACE = {
 class ImportData:
     def __init__(self, data_filepath):
         self.data_path = Path(data_filepath)
-        self.X_train = None
-        self.y_train = None
-        self.X_val = None
-        self.y_val = None
+        self.train = None
+        self.val = None
 
     def import_data(self):
-        X_train_path = self.data_path / "X_train.csv"
-        y_train_path = self.data_path / "y_train.csv"
-        X_val_path = self.data_path / "X_val.csv"
-        y_val_path = self.data_path / "y_val.csv"
+        train_path = self.data_path / "train.csv"
+        val_path = self.data_path / "val.csv"
 
-        self.X_train = pl.read_csv(X_train_path)
-        self.y_train = pl.read_csv(y_train_path)
-        self.X_val = pl.read_csv(X_val_path)
-        self.y_val = pl.read_csv(y_val_path)
+        self.train = pl.read_csv(train_path)
+        self.val = pl.read_csv(val_path)
         return self
 
     def convert_to_numpy(self):
-        X_train = self.X_train.select(cs.ends_with("_std"))
-        X_val = self.X_val.select(cs.ends_with("_std"))
-        datasets = [X_train, self.y_train, X_val, self.y_val]
+        X_train = self.train.select(cs.ends_with("_std"))
+        X_val = self.val.select(cs.ends_with("_std"))
+        datasets = [X_train, X_val]
         assert all(
             dataset is not None for dataset in datasets
         ), "One of the train/validation datasets does not exist"
-        assert len(datasets) == 4, "Datasets List does not have all 4 elements"
+        assert len(datasets) == 2, "Datasets List does not have all 4 elements"
         result = []
         for dataset in datasets:
             if dataset.shape[1] == 1:
@@ -138,12 +132,14 @@ def main(data_filepath, max_evals_var):
     importing.import_data()
     
     # Select original columns in dataframe
-    columns = importing.X_train.select(~cs.ends_with("_std")).columns
+    columns = importing.train.select(~cs.ends_with("_std")).columns
     with open("columns.json", "w") as f:
         json.dump(columns, f)
     
     # Prepare for Training
-    X_train_np, y_train_np, X_val_np, y_val_np = importing.convert_to_numpy()
+    X_train_np, X_val_np = importing.convert_to_numpy()
+    y_train_np, y_val_np = (importing.train.select("quality").to_numpy().flatten(),
+                            importing.val.select("quality").to_numpy().flatten())
 
     logging.info("passing to DMatrix")
     train = xgb.DMatrix(data=X_train_np, label=y_train_np)
@@ -152,7 +148,7 @@ def main(data_filepath, max_evals_var):
     logging.info("starting hyperparameter search")
     best_result = fmin(
         fn=lambda params: objective(
-            params, train, valid, importing.y_val, params['eval_metric']
+            params, train, valid, importing.val.select("quality"), params['eval_metric']
         ),
         space=SEARCH_SPACE,
         algo=tpe.suggest,
