@@ -38,8 +38,13 @@ Technical methodology:
 ********************************************How will you use this?********************************************
 
 1. They need to install Git on their machine if they don't have it already.
-2. They should clone your repository using the command **`git clone https://github.com/<your-username>/<your-repo>.git`**, replacing **`<your-username>`** and **`<your-repo>`** with your actual GitHub username and repository name.
-3. They should navigate into the directory of the cloned repository using **`cd <your-repo>`** and run your **`start.sh`** script, most likely with the command **`./start.sh`**.
+2. They should clone your repository:
+
+- `git clone https://github.com/samlafell/mlops_zoomcamp_sam.git`
+
+3. Then CD into the repo:
+
+- `cd mlops_zoomcamp_sam/07-project`
 ********************************
 
 ********************************A few things to note:********************************
