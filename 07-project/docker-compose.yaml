@@ -43,19 +43,6 @@ services:
       - front-tier
     restart: always
 
-  flask-app:
-    build: .
-    ports:
-      - "8000:8000"
-    volumes:
-      - ~/.aws/credentials:/root/.aws/credentials
-    depends_on:
-      - mlflow-server
-    environment:
-      MLFLOW_TRACKING_URI: "http://mlflow-server:5001"
-    networks:
-      - front-tier
-      
   mlflow-server:
     image: wine_quality
     ports:
@@ -68,10 +55,25 @@ services:
       - "-h"
       - "0.0.0.0"
       - "-p"
-      - "5000"
+      - "5001"
       - "--backend-store-uri"
       - "postgresql://mlflow:9xh2Om9ryDbpPWLoFe8z@mlflow-project-db-ubuntu-2.cdflealfthrn.us-east-2.rds.amazonaws.com:5432/mlflow_db"
       - "--default-artifact-root"
       - "s3://sal-wine-quality"
     networks:
       - back-tier
+
+  flask-app:
+    image: wine_quality
+    ports:
+      - "8000:8000"
+    volumes:
+      - ~/.aws/credentials:/root/.aws/credentials
+    depends_on:
+      - mlflow-server
+    environment:
+      MLFLOW_TRACKING_URI: "http://mlflow-server:5001"
+    networks:
+      - front-tier
+      - back-tier
+    command: ./wait-for-it.sh mlflow-server:5001 -- python app.py

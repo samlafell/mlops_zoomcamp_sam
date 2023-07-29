@@ -15,6 +15,7 @@ COPY utils/ /app/utils
 COPY *.py /app/
 COPY Makefile /app/
 COPY columns.json /app/columns.json
+COPY wait-for-it.sh /app/wait-for-it.sh
 
 # Make sure pip is up to date
 RUN pip install -U pip
@@ -22,6 +23,8 @@ RUN pip install -U pipenv
 
 # Copy over the Pipfile and Pipfile.lock files
 COPY Pipfile Pipfile.lock ./
+
+RUN chmod +x /app/wait-for-it.sh
 
 # Install the dependencies
 RUN pipenv install --system --deploy

@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 log_fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 logging.basicConfig(level=logging.INFO, format=log_fmt)
 
-mlflow.set_tracking_uri("http://0.0.0.0:5001")
+mlflow.set_tracking_uri("http://mlflow-server:5001")
 mlflow_client = MlflowClient()
 class ModelService:
     def __init__(self, model_name, data=None, model=None, model_stage="Production"):
