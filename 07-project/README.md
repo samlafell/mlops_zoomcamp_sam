@@ -58,6 +58,7 @@ When you're ready to start:
 - Download:  <https://sal-wine-quality.s3.us-east-2.amazonaws.com/test.csv>
     - The bucket is publicy available so you should be able to access and download this test file. After running ./start.sh, you will be prompted to direct the program to the location of this file on your machine. This is scoring data.
 - Terminal: ``./start.sh``
+    - This step will take 5 minutes or so, it is doing a lot of stuff.
 - Grafana Monitoring:
     - localhost:3000
     - admin/admin I think is how to log in
