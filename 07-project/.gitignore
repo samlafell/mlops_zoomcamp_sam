@@ -90,3 +90,7 @@ target/
 
 # AWS Creds
 .aws
+makefile_example.md
+.dockerfilehash
+model.py
+requirements.txt
